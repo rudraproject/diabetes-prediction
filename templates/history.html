@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction History</title>
+    <style>
+        body { font-family: Arial; background:#f4f4f4; padding:30px; }
+        table { width:100%; border-collapse: collapse; background:white; }
+        th, td { padding:10px; border:1px solid #ddd; text-align:center; }
+        th { background:#4CAF50; color:white; }
+        tr:hover { background:#f2f2f2; }
+        h2 { text-align:center; }
+    </style>
+</head>
+<body>
+
+<h2>Stored Prediction Data</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Pregnancies</th>
+        <th>Glucose</th>
+        <th>BloodPressure</th>
+        <th>SkinThickness</th>
+        <th>Insulin</th>
+        <th>BMI</th>
+        <th>DPF</th>
+        <th>Age</th>
+        <th>Result</th>
+        <th>Confidence</th>
+    </tr>
+
+    {% for row in data %}
+    <tr>
+        <td>{{ row.id }}</td>
+        <td>{{ row.Pregnancies }}</td>
+        <td>{{ row.Glucose }}</td>
+        <td>{{ row.BloodPressure }}</td>
+        <td>{{ row.SkinThickness }}</td>
+        <td>{{ row.Insulin }}</td>
+        <td>{{ row.BMI }}</td>
+        <td>{{ row.DPF }}</td>
+        <td>{{ row.Age }}</td>
+        <td>{{ row.result }}</td>
+        <td>{{ row.confidence }}%</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+</body>
+</html>
