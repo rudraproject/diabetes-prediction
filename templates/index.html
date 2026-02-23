@@ -1,122 +1,109 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Diabetes Risk Assessment</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<title>AI Diabetes Risk Assessment</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
+<style>
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            overflow-x: hidden;
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    min-height: 100vh;
+    color: white;
+}
 
-            /* 🔥 FIXED BACKGROUND ISSUE */
-            background: url("{{ url_for('static', filename='hospital.jpg') }}") no-repeat center center;
-            background-size: cover;
-            background-attachment: scroll;
-        }
+/* Futuristic Navbar */
+.navbar {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0,255,255,0.3);
+}
 
-        /* Navbar */
-        .navbar {
-            background: linear-gradient(90deg,#0d6efd,#198754);
-        }
+/* Glass Card */
+.glass-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 45px;
+    box-shadow: 0 0 40px rgba(0,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+}
 
-        /* Overlay covers entire page */
-        .overlay {
-            min-height: 100vh;
-            width: 100%;
-            background: linear-gradient(
-                rgba(0, 40, 80, 0.85),
-                rgba(0, 90, 120, 0.85)
-            );
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+/* Input Styling */
+.form-control {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    color: white;
+}
 
-            /* Top padding for navbar */
-            padding: 120px 20px 60px 20px;
-        }
+.form-control:focus {
+    background: rgba(255,255,255,0.08);
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0,255,255,0.6);
+    color: white;
+}
 
-        /* Glass Card */
-        .card {
-            background: rgba(145, 212, 218, 0.95);
-            border-radius: 25px;
-            padding: 45px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        }
+.form-label {
+    font-weight: 500;
+    color: #00ffff;
+}
 
-        h2 {
-            font-weight: 700;
-            color: #0d6efd;
-        }
+.range-text {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+}
 
-        .form-label {
-            font-weight: 600;
-            color: #1c3d5a;
-        }
+/* Button */
+.btn-modern {
+    background: linear-gradient(135deg, #00ffff, #00ff99);
+    border: none;
+    border-radius: 30px;
+    padding: 12px 45px;
+    font-size: 18px;
+    font-weight: 600;
+    transition: 0.3s ease;
+    color: black;
+}
 
-        .range-text {
-            font-size: 13px;
-            color: #6c757d;
-        }
+.btn-modern:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(0,255,255,0.8);
+}
 
-        .form-control {
-            border-radius: 12px;
-            border: 1px solid #ced4da;
-            transition: 0.3s ease;
-        }
+.title {
+    font-weight: 600;
+    letter-spacing: 1px;
+}
 
-        .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
-        }
+.container-wrapper {
+    padding-top: 120px;
+    padding-bottom: 60px;
+}
 
-        .btn-custom {
-            background: linear-gradient(135deg, #0d6efd, #198754);
-            border: none;
-            border-radius: 30px;
-            padding: 12px 40px;
-            font-size: 18px;
-            font-weight: 600;
-            transition: 0.3s ease;
-            color: white;
-        }
-
-        .btn-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-
-        .header-icon {
-            font-size: 30px;
-        }
-    </style>
+</style>
 </head>
 
 <body>
 
-<!-- FIXED NAVBAR -->
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container-fluid">
-        <a class="navbar-brand text-white fw-bold" href="#">
-            🏥 Diabetes Prediction System
+        <a class="navbar-brand text-white fw-bold">
+            🤖 AI Diabetes Prediction System
         </a>
 
         <div class="ms-auto d-flex align-items-center">
-            <span class="text-white me-3 fw-semibold">
+            <span class="text-info me-3 fw-semibold">
                 {{ session['user'] }}
             </span>
 
             <a href="{{ url_for('logout') }}" 
-            class="btn btn-light btn-sm fw-bold">
+               class="btn btn-outline-light btn-sm">
                 Logout
             </a>
         </div>
@@ -124,77 +111,79 @@
 </nav>
 
 <!-- MAIN CONTENT -->
-<div class="overlay">
-    <div class="card col-md-8 col-lg-7">
+<div class="container container-wrapper">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 glass-card">
 
-        <div class="text-center mb-4">
-            <div class="header-icon">🩺</div>
-            <h2>Diabetes Risk Assessment</h2>
-            <p class="text-muted">
-                Enter accurate medical details for AI-based prediction
-            </p>
+            <div class="text-center mb-4">
+                <h2 class="title">🧬 AI Clinical Risk Assessment</h2>
+                <p class="text-light opacity-75">
+                    Enter medical parameters for advanced ML-based prediction
+                </p>
+            </div>
+
+            <form action="/predict" method="post">
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Pregnancies</label>
+                        <input type="number" name="Pregnancies" class="form-control" min="0" max="20" required>
+                        <div class="range-text">Range: 0 – 20</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Glucose (mg/dL)</label>
+                        <input type="number" name="Glucose" class="form-control" min="50" max="300" required>
+                        <div class="range-text">Normal fasting: 70 – 140</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Blood Pressure (mm Hg)</label>
+                        <input type="number" name="BloodPressure" class="form-control" min="40" max="180" required>
+                        <div class="range-text">Typical: 60 – 120</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Skin Thickness (mm)</label>
+                        <input type="number" name="SkinThickness" class="form-control" min="5" max="60" required>
+                        <div class="range-text">Typical: 10 – 50</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Insulin (µU/ml)</label>
+                        <input type="number" name="Insulin" class="form-control" min="0" max="900" required>
+                        <div class="range-text">Typical: 16 – 166</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">BMI</label>
+                        <input type="number" name="BMI" class="form-control" min="10" max="70" step="0.1" required>
+                        <div class="range-text">Normal: 18.5 – 24.9</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Diabetes Pedigree Function</label>
+                        <input type="number" name="DPF" class="form-control" min="0.05" max="3" step="0.01" required>
+                        <div class="range-text">Range: 0.05 – 2.5</div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Age</label>
+                        <input type="number" name="Age" class="form-control" min="10" max="100" required>
+                        <div class="range-text">Range: 10 – 100</div>
+                    </div>
+
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-modern">
+                        🚀 Analyze Risk
+                    </button>
+                </div>
+
+            </form>
+
         </div>
-
-        <form action="/predict" method="post">
-            <div class="row">
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Pregnancies</label>
-                    <input type="number" name="Pregnancies" class="form-control" min="0" max="20" required>
-                    <div class="range-text">Range: 0 – 20</div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Glucose Level (mg/dL)</label>
-                    <input type="number" name="Glucose" class="form-control" min="50" max="300" required>
-                    <div class="range-text">Normal fasting: 70 – 140</div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Blood Pressure (mm Hg)</label>
-                    <input type="number" name="BloodPressure" class="form-control" min="40" max="180" required>
-                    <div class="range-text">Typical: 60 – 120</div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Skin Thickness (mm)</label>
-                    <input type="number" name="SkinThickness" class="form-control" min="5" max="60" required>
-                    <div class="range-text">Typical: 10 – 50</div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Insulin (mu U/ml)</label>
-                    <input type="number" name="Insulin" class="form-control" min="0" max="900" required>
-                    <div class="range-text">Typical: 16 – 166</div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Body Mass Index (BMI)</label>
-                    <input type="number" name="BMI" class="form-control" min="10" max="70" step="0.1" required>
-                    <div class="range-text">Normal: 18.5 – 24.9</div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Diabetes Pedigree Function</label>
-                    <input type="number" name="DPF" class="form-control" min="0.05" max="3" step="0.01" required>
-                    <div class="range-text">Range: 0.05 – 2.5</div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Age</label>
-                    <input type="number" name="Age" class="form-control" min="10" max="100" required>
-                    <div class="range-text">Range: 10 – 100</div>
-                </div>
-
-            </div>
-
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-custom">
-                    Predict Risk
-                </button>
-            </div>
-        </form>
-
     </div>
 </div>
 

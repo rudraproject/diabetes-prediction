@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "supersecretkey123"
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "supersecretkey123")
 
 # ---------------- DATABASE CONFIG ----------------
 app.config['SQLALCHEMY_DATABASE_URI'] = (
@@ -21,7 +21,6 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     __tablename__ = "users"
-
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
@@ -31,8 +30,7 @@ class Patient(db.Model):
     __tablename__ = "patients"
 
     id = db.Column(db.Integer, primary_key=True)
-
-    username = db.Column(db.String(100), nullable=False)   # ✅ STORED AS STRING
+    username = db.Column(db.String(100), nullable=False)
 
     Pregnancies = db.Column(db.Integer, nullable=False)
     Glucose = db.Column(db.Integer, nullable=False)
@@ -43,8 +41,9 @@ class Patient(db.Model):
     DPF = db.Column(db.Float, nullable=False)
     Age = db.Column(db.Integer, nullable=False)
 
-    result = db.Column(db.String(80), nullable=False)
+    risk_level = db.Column(db.String(50), nullable=False)
     confidence = db.Column(db.Float, nullable=False)
+    timeline = db.Column(db.String(200), nullable=False)
 
 
 # ---------------- LOAD MODEL ----------------
@@ -73,8 +72,8 @@ def register():
             return "Username already exists!"
 
         hashed_password = generate_password_hash(password)
-
         new_user = User(username=username, password=hashed_password)
+
         db.session.add(new_user)
         db.session.commit()
 
@@ -131,6 +130,7 @@ def predict():
         return redirect(url_for("login"))
 
     try:
+        # Collect input
         Pregnancies = int(request.form['Pregnancies'])
         Glucose = int(request.form['Glucose'])
         BloodPressure = int(request.form['BloodPressure'])
@@ -140,25 +140,80 @@ def predict():
         DPF = float(request.form['DPF'])
         Age = int(request.form['Age'])
 
+        # Prepare data
         input_data = np.array([[Pregnancies, Glucose, BloodPressure,
                                 SkinThickness, Insulin, BMI, DPF, Age]])
 
         input_scaled = scaler.transform(input_data)
 
-        prediction = model.predict(input_scaled)[0]
-        probability = model.predict_proba(input_scaled)[0][1]
+        probability = float(model.predict_proba(input_scaled)[0][1])
         confidence = round(probability * 100, 2)
 
-        if prediction == 1:
-            result_text = "High Risk of Diabetes"
-            message = "Clinical consultation recommended."
-            color = "danger"
-        else:
-            result_text = "Low Risk of Diabetes"
-            message = "Lower probability indicators."
-            color = "success"
+        recommendations = []
 
-        # ✅ SAVE USERNAME AS STRING
+        # ---------------- RISK LEVEL LOGIC ----------------
+
+        if probability < 0.35:
+            risk_level = "Low Risk"
+            color = "success"
+            timeline = "Low short-term risk (0–3 years). Maintain healthy lifestyle."
+
+            recommendations.extend([
+                "Maintain balanced low-glycemic diet.",
+                "Exercise 30 minutes daily.",
+                "Annual fasting glucose test.",
+                "Maintain healthy BMI range.",
+                "Ensure proper sleep cycle."
+            ])
+
+        elif 0.35 <= probability < 0.65:
+            risk_level = "Pre-Diabetic Risk"
+            color = "warning"
+            timeline = "Moderate progression risk within 3–7 years without intervention."
+
+            recommendations.extend([
+                "Adopt structured low-carb diet.",
+                "Increase physical activity to 45 minutes daily.",
+                "Monitor blood glucose every 3–6 months.",
+                "Reduce weight by 5–10%.",
+                "Consult doctor for HbA1c evaluation."
+            ])
+
+        else:
+            risk_level = "High Risk"
+            color = "danger"
+            timeline = "High likelihood of progression in near future without medical care."
+
+            recommendations.extend([
+                "Consult endocrinologist immediately.",
+                "Perform HbA1c and fasting tests.",
+                "Begin medically supervised diet plan.",
+                "Daily glucose monitoring advised.",
+                "Structured weight reduction program."
+            ])
+
+        # ---------------- SMART PARAMETER SUGGESTIONS ----------------
+
+        if Glucose > 140:
+            recommendations.append("Elevated glucose detected: reduce refined sugars.")
+
+        if BMI >= 30:
+            recommendations.append("High BMI detected: initiate weight-loss program.")
+
+        if BloodPressure > 90:
+            recommendations.append("Elevated blood pressure: adopt low-sodium diet.")
+
+        if Insulin > 180:
+            recommendations.append("Possible insulin resistance detected.")
+
+        if Age > 45:
+            recommendations.append("Annual metabolic screening recommended.")
+
+        if DPF > 0.8:
+            recommendations.append("High genetic predisposition: maintain strict preventive care.")
+
+        # ---------------- SAVE TO DATABASE ----------------
+
         new_patient = Patient(
             username=session["user"],
             Pregnancies=Pregnancies,
@@ -169,8 +224,9 @@ def predict():
             BMI=BMI,
             DPF=DPF,
             Age=Age,
-            result=result_text,
-            confidence=confidence
+            risk_level=risk_level,
+            confidence=confidence,
+            timeline=timeline
         )
 
         db.session.add(new_patient)
@@ -178,13 +234,15 @@ def predict():
 
         return render_template(
             "result.html",
-            result=result_text,
-            message=message,
+            risk=risk_level,
             confidence=confidence,
-            color=color
+            timeline=timeline,
+            color=color,
+            recommendations=recommendations
         )
 
     except Exception as e:
+        db.session.rollback()
         return f"Error occurred: {str(e)}"
 
 
