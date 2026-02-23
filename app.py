@@ -4,6 +4,7 @@ import joblib
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "9f3a8d72c1b5e6f4a9d2b3c7e8f1a0b2"
@@ -173,6 +174,7 @@ def predict():
 
 # ---------------- MAIN ----------------
 if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
     with app.app_context():
         db.create_all()
         inspector = inspect(db.engine)
