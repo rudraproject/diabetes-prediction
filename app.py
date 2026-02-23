@@ -2,16 +2,15 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import numpy as np
 import joblib
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import inspect
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "9f3a8d72c1b5e6f4a9d2b3c7e8f1a0b2"
+app.config['SECRET_KEY'] = "supersecretkey123"
 
 # ---------------- DATABASE CONFIG ----------------
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    "mssql+pyodbc://RUDRA\\prern@RUDRA\\SQLEXPRESS/sugardb?"
+    "mssql+pyodbc://@RUDRA\\SQLEXPRESS/sugardb?"
     "driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -19,10 +18,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # ---------------- DATABASE MODELS ----------------
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+
+
 class Patient(db.Model):
     __tablename__ = "patients"
 
     id = db.Column(db.Integer, primary_key=True)
+
+    username = db.Column(db.String(100), nullable=False)   # ✅ STORED AS STRING
+
     Pregnancies = db.Column(db.Integer, nullable=False)
     Glucose = db.Column(db.Integer, nullable=False)
     BloodPressure = db.Column(db.Integer, nullable=False)
@@ -31,16 +42,9 @@ class Patient(db.Model):
     BMI = db.Column(db.Float, nullable=False)
     DPF = db.Column(db.Float, nullable=False)
     Age = db.Column(db.Integer, nullable=False)
+
     result = db.Column(db.String(80), nullable=False)
     confidence = db.Column(db.Float, nullable=False)
-
-
-class User(db.Model):
-    __tablename__ = "users"
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
 
 
 # ---------------- LOAD MODEL ----------------
@@ -57,19 +61,20 @@ def home():
     return render_template("index.html")
 
 
+# ---------------- REGISTER ----------------
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
+        if User.query.filter_by(username=username).first():
             return "Username already exists!"
 
         hashed_password = generate_password_hash(password)
-        new_user = User(username=username, password=hashed_password)
 
+        new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 
@@ -77,6 +82,8 @@ def register():
 
     return render_template("register.html")
 
+
+# ---------------- LOGIN ----------------
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -95,21 +102,28 @@ def login():
     return render_template("login.html")
 
 
-# ✅ Improved Logout
+# ---------------- LOGOUT ----------------
+
 @app.route("/logout")
 def logout():
-    session.clear()   # Clears entire session securely
+    session.clear()
     return redirect(url_for("login"))
 
+
+# ---------------- HISTORY ----------------
 
 @app.route("/history")
 def history():
     if "user" not in session:
         return redirect(url_for("login"))
 
-    patients = Patient.query.order_by(Patient.id.desc()).all()
+    patients = Patient.query.filter_by(username=session["user"]) \
+                            .order_by(Patient.id.desc()).all()
+
     return render_template("history.html", data=patients)
 
+
+# ---------------- PREDICT ----------------
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -144,7 +158,9 @@ def predict():
             message = "Lower probability indicators."
             color = "success"
 
+        # ✅ SAVE USERNAME AS STRING
         new_patient = Patient(
+            username=session["user"],
             Pregnancies=Pregnancies,
             Glucose=Glucose,
             BloodPressure=BloodPressure,
@@ -169,15 +185,13 @@ def predict():
         )
 
     except Exception as e:
-        return f"Error occurred: {e}"
+        return f"Error occurred: {str(e)}"
 
 
 # ---------------- MAIN ----------------
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
     with app.app_context():
         db.create_all()
-        inspector = inspect(db.engine)
-        print("Tables in database:", inspector.get_table_names())
 
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True)
