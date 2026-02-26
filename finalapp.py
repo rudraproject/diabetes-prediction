@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 
 # ---------------- SECRET KEY ----------------
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY","devkey123")
 
 # ---------------- DATABASE CONFIG ----------------
 database_url = os.environ.get("DATABASE_URL")
