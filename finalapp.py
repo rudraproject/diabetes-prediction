@@ -8,11 +8,13 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "supersecretkey123")
 
-# ---------------- DATABASE CONFIG ----------------
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    "mssql+pyodbc://@RUDRA\\SQLEXPRESS/sugardb?"
-    "driver=ODBC+Driver+17+for+SQL+Server&trusted_connection=yes"
+# ---------------- DATABASE CONFIG (PostgreSQL) ----------------
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://postgres:123@localhost:5432/sugardb"
 )
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -38,7 +40,6 @@ class Patient(db.Model):
     SkinThickness = db.Column(db.Integer, nullable=False)
     Insulin = db.Column(db.Integer, nullable=False)
     BMI = db.Column(db.Float, nullable=False)
-    DPF = db.Column(db.Float, nullable=False)
     Age = db.Column(db.Integer, nullable=False)
 
     risk_level = db.Column(db.String(50), nullable=False)
@@ -47,6 +48,7 @@ class Patient(db.Model):
 
 
 # ---------------- LOAD MODEL ----------------
+
 model = joblib.load("diabetes_m.pkl")
 scaler = joblib.load("diabetes_sc.pkl")
 
@@ -59,8 +61,6 @@ def home():
         return redirect(url_for("login"))
     return render_template("index.html")
 
-
-# ---------------- REGISTER ----------------
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -82,8 +82,6 @@ def register():
     return render_template("register.html")
 
 
-# ---------------- LOGIN ----------------
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -101,15 +99,11 @@ def login():
     return render_template("login.html")
 
 
-# ---------------- LOGOUT ----------------
-
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
 
-
-# ---------------- HISTORY ----------------
 
 @app.route("/history")
 def history():
@@ -130,19 +124,17 @@ def predict():
         return redirect(url_for("login"))
 
     try:
-        # Collect input
+        # Collect input (7 features now)
         Pregnancies = int(request.form['Pregnancies'])
         Glucose = int(request.form['Glucose'])
         BloodPressure = int(request.form['BloodPressure'])
         SkinThickness = int(request.form['SkinThickness'])
         Insulin = int(request.form['Insulin'])
         BMI = float(request.form['BMI'])
-        DPF = float(request.form['DPF'])
         Age = int(request.form['Age'])
 
-        # Prepare data
         input_data = np.array([[Pregnancies, Glucose, BloodPressure,
-                                SkinThickness, Insulin, BMI, DPF, Age]])
+                                SkinThickness, Insulin, BMI, Age]])
 
         input_scaled = scaler.transform(input_data)
 
@@ -153,7 +145,7 @@ def predict():
 
         # ---------------- RISK LEVEL LOGIC ----------------
 
-        if probability < 0.35:
+        if probability < 0.25:
             risk_level = "Low Risk"
             color = "success"
             timeline = "Low short-term risk (0–3 years). Maintain healthy lifestyle."
@@ -166,7 +158,7 @@ def predict():
                 "Ensure proper sleep cycle."
             ])
 
-        elif 0.35 <= probability < 0.65:
+        elif 0.25 <= probability < 0.50:
             risk_level = "Pre-Diabetic Risk"
             color = "warning"
             timeline = "Moderate progression risk within 3–7 years without intervention."
@@ -209,9 +201,6 @@ def predict():
         if Age > 45:
             recommendations.append("Annual metabolic screening recommended.")
 
-        if DPF > 0.8:
-            recommendations.append("High genetic predisposition: maintain strict preventive care.")
-
         # ---------------- SAVE TO DATABASE ----------------
 
         new_patient = Patient(
@@ -222,7 +211,6 @@ def predict():
             SkinThickness=SkinThickness,
             Insulin=Insulin,
             BMI=BMI,
-            DPF=DPF,
             Age=Age,
             risk_level=risk_level,
             confidence=confidence,
@@ -249,8 +237,8 @@ def predict():
 # ---------------- MAIN ----------------
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
     with app.app_context():
         db.create_all()
 
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
