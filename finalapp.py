@@ -6,15 +6,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "supersecretkey123")
 
-# ---------------- DATABASE CONFIG (PostgreSQL) ----------------
+# ---------------- SECRET KEY ----------------
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    "DATABASE_URL",
-    "postgresql://postgres:123@localhost:5432/sugardb"
-)
+# ---------------- DATABASE CONFIG ----------------
+database_url = os.environ.get("DATABASE_URL")
 
+if not database_url:
+    raise ValueError("DATABASE_URL is not set in environment variables")
+
+# Fix Render postgres:// issue
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -47,8 +53,11 @@ class Patient(db.Model):
     timeline = db.Column(db.String(200), nullable=False)
 
 
-# ---------------- LOAD MODEL ----------------
+# ---------------- CREATE TABLES ----------------
+with app.app_context():
+    db.create_all()
 
+# ---------------- LOAD MODEL ----------------
 model = joblib.load("diabetes_m.pkl")
 scaler = joblib.load("diabetes_sc.pkl")
 
@@ -111,7 +120,7 @@ def history():
         return redirect(url_for("login"))
 
     patients = Patient.query.filter_by(username=session["user"]) \
-                            .order_by(Patient.id.desc()).all()
+        .order_by(Patient.id.desc()).all()
 
     return render_template("history.html", data=patients)
 
@@ -124,7 +133,6 @@ def predict():
         return redirect(url_for("login"))
 
     try:
-        # Collect input (7 features now)
         Pregnancies = int(request.form['Pregnancies'])
         Glucose = int(request.form['Glucose'])
         BloodPressure = int(request.form['BloodPressure'])
@@ -143,7 +151,7 @@ def predict():
 
         recommendations = []
 
-        # ---------------- RISK LEVEL LOGIC ----------------
+        # ---------------- RISK LOGIC ----------------
 
         if probability < 0.25:
             risk_level = "Low Risk"
@@ -184,8 +192,7 @@ def predict():
                 "Structured weight reduction program."
             ])
 
-        # ---------------- SMART PARAMETER SUGGESTIONS ----------------
-
+        # Extra smart checks
         if Glucose > 140:
             recommendations.append("Elevated glucose detected: reduce refined sugars.")
 
@@ -201,8 +208,7 @@ def predict():
         if Age > 45:
             recommendations.append("Annual metabolic screening recommended.")
 
-        # ---------------- SAVE TO DATABASE ----------------
-
+        # Save record
         new_patient = Patient(
             username=session["user"],
             Pregnancies=Pregnancies,
@@ -237,8 +243,5 @@ def predict():
 # ---------------- MAIN ----------------
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port) 
+    app.run(host="0.0.0.0", port=port)
