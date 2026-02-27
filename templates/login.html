@@ -8,11 +8,14 @@
 
 <style>
 
+/* Animated Background */
 body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1c92d2);
+    background-size: 400% 400%;
+    animation: gradientMove 10s ease infinite;
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -20,21 +23,50 @@ body {
     color: white;
 }
 
-/* Glass Login Card */
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* Glass Card */
 .glass-card {
     width: 420px;
     padding: 45px;
     border-radius: 25px;
     background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255,255,255,0.15);
-    box-shadow: 0 0 40px rgba(0,255,255,0.2);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 0 50px rgba(0,255,255,0.3);
+    animation: floatCard 4s ease-in-out infinite;
+}
+
+@keyframes floatCard {
+    0% {transform: translateY(0px);}
+    50% {transform: translateY(-8px);}
+    100% {transform: translateY(0px);}
+}
+
+/* AI Icon Circle */
+.ai-circle {
+    width: 70px;
+    height: 70px;
+    margin: auto;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00ffff, #00ff99);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    color: black;
+    box-shadow: 0 0 30px rgba(0,255,255,0.8);
 }
 
 /* Title */
 .portal-title {
     font-weight: 600;
     letter-spacing: 1px;
+    margin-top: 15px;
 }
 
 /* Inputs */
@@ -43,17 +75,22 @@ body {
     border: 1px solid rgba(255,255,255,0.2);
     border-radius: 12px;
     color: white;
+    padding: 12px;
+}
+
+.form-control::placeholder {
+    color: rgba(255,255,255,0.6);
 }
 
 .form-control:focus {
     background: rgba(255,255,255,0.08);
     border-color: #00ffff;
-    box-shadow: 0 0 12px rgba(0,255,255,0.6);
+    box-shadow: 0 0 15px rgba(0,255,255,0.8);
     color: white;
 }
 
-/* Button */
-.btn-modern {
+/* Login Button */
+.btn-login {
     background: linear-gradient(135deg, #00ffff, #00ff99);
     border: none;
     border-radius: 30px;
@@ -64,24 +101,30 @@ body {
     color: black;
 }
 
-.btn-modern:hover {
+.btn-login:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 25px rgba(0,255,255,0.8);
+    box-shadow: 0 0 25px rgba(0,255,255,1);
 }
 
-/* Register link */
-.register-link {
+/* Register Button */
+.btn-register {
+    background: transparent;
+    border: 1px solid #00ffff;
+    border-radius: 30px;
+    padding: 10px;
     color: #00ffff;
-    text-decoration: none;
-    font-weight: 500;
+    transition: 0.3s ease;
 }
 
-.register-link:hover {
-    text-decoration: underline;
+.btn-register:hover {
+    background: #00ffff;
+    color: black;
+    box-shadow: 0 0 20px rgba(0,255,255,1);
 }
 
-.ai-icon {
-    font-size: 35px;
+/* Divider */
+hr {
+    border-color: rgba(255,255,255,0.2);
 }
 
 </style>
@@ -92,7 +135,7 @@ body {
 <div class="glass-card">
 
     <div class="text-center mb-4">
-        <div class="ai-icon">🤖</div>
+        <div class="ai-circle">🤖</div>
         <h3 class="portal-title">AI Clinical Access Portal</h3>
         <p class="text-light opacity-75">
             Secure login to Diabetes Intelligence System
@@ -111,19 +154,21 @@ body {
         </div>
 
         <div class="d-grid">
-            <button type="submit" class="btn btn-modern">
+            <button type="submit" class="btn btn-login">
                 🔐 Secure Login
             </button>
         </div>
     </form>
 
-    <hr class="text-light">
+    <hr class="my-4">
 
     <div class="text-center">
-        <small class="text-light opacity-75">New to the system?</small><br>
-        <a href="/register" class="register-link">
-            Create Clinical Account
-        </a>
+        <small class="text-light opacity-75">New to the system?</small>
+        <div class="d-grid mt-3">
+            <a href="/register" class="btn btn-register">
+                📝 Create Clinical Account
+            </a>
+        </div>
     </div>
 
 </div>
