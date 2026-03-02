@@ -6,83 +6,139 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
+
+/* ===== SAME BRIGHT HOSPITAL BACKGROUND ===== */
 body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     min-height: 100vh;
     color: white;
+    overflow-x: hidden;
+
+    background:
+        linear-gradient(rgba(0,150,200,0.55), rgba(0,100,150,0.55)),
+        url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1600&q=80");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
+/* ===== Floating Medical Icons ===== */
+.medical-icons {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.medical-icons span {
+    position: absolute;
+    font-size: 42px;
+    opacity: 0.15;
+    animation: floatIcons linear infinite;
+}
+
+.medical-icons span:nth-child(1) { left: 10%; animation-duration: 18s; }
+.medical-icons span:nth-child(2) { left: 25%; animation-duration: 22s; }
+.medical-icons span:nth-child(3) { left: 40%; animation-duration: 20s; }
+.medical-icons span:nth-child(4) { left: 60%; animation-duration: 25s; }
+.medical-icons span:nth-child(5) { left: 75%; animation-duration: 19s; }
+.medical-icons span:nth-child(6) { left: 85%; animation-duration: 23s; }
+.medical-icons span:nth-child(7) { left: 50%; animation-duration: 21s; }
+
+@keyframes floatIcons {
+    0% { transform: translateY(100vh) rotate(0deg); }
+    100% { transform: translateY(-10vh) rotate(360deg); }
+}
+
+/* ===== NAVBAR MATCHING STYLE ===== */
 .navbar {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 20px rgba(0,255,255,0.3);
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    z-index: 3;
 }
 
+/* ===== MAIN CARD ===== */
 .glass-card {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(18px);
     border-radius: 25px;
     padding: 45px;
-    box-shadow: 0 0 40px rgba(0,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.4);
+    position: relative;
+    z-index: 2;
 }
 
+/* ===== FORM STYLING ===== */
 .form-control {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.5);
     border-radius: 12px;
     color: white;
 }
 
 .form-control:focus {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.35);
     border-color: #00ffff;
-    box-shadow: 0 0 10px rgba(0,255,255,0.6);
+    box-shadow: 0 0 12px rgba(0,255,255,0.8);
     color: white;
 }
 
 .form-label {
-    font-weight: 500;
-    color: #00ffff;
+    font-weight: 600;
 }
 
 .range-text {
     font-size: 12px;
-    color: rgba(255,255,255,0.6);
+    opacity: 0.8;
 }
 
+/* ===== BUTTON STYLE ===== */
 .btn-modern {
-    background: linear-gradient(135deg, #00ffff, #00ff99);
+    background: linear-gradient(135deg, #00eaff, #00ffcc);
     border: none;
     border-radius: 30px;
     padding: 12px 45px;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 700;
     transition: 0.3s ease;
     color: black;
 }
 
 .btn-modern:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 25px rgba(0,255,255,0.8);
+    box-shadow: 0 0 25px rgba(0,255,255,1);
 }
 
 .title {
-    font-weight: 600;
-    letter-spacing: 1px;
+    font-weight: 700;
 }
 
 .container-wrapper {
     padding-top: 120px;
     padding-bottom: 60px;
 }
+
 </style>
 </head>
 
 <body>
+
+<!-- Floating Medical Icons -->
+<div class="medical-icons">
+    <span>💊</span>
+    <span>🩺</span>
+    <span>🧬</span>
+    <span>❤️</span>
+    <span>🏥</span>
+    <span>🧪</span>
+    <span>💉</span>
+</div>
 
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container-fluid">
@@ -91,12 +147,12 @@ body {
         </a>
 
         <div class="ms-auto d-flex align-items-center">
-            <span class="text-info me-3 fw-semibold">
+            <span class="me-3 fw-semibold">
                 {{ session.get('user') }}
             </span>
 
             <a href="{{ url_for('logout') }}" 
-               class="btn btn-outline-light btn-sm">
+               class="btn btn-light btn-sm fw-semibold">
                 Logout
             </a>
         </div>
@@ -109,7 +165,7 @@ body {
 
             <div class="text-center mb-4">
                 <h2 class="title">🧬 AI Clinical Risk Assessment</h2>
-                <p class="text-light opacity-75">
+                <p class="opacity-75">
                     Enter medical parameters for advanced ML-based prediction
                 </p>
             </div>

@@ -8,80 +8,148 @@
 
 <style>
 
+/* ===== SAME BRIGHT HOSPITAL BACKGROUND ===== */
 body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
+    overflow: hidden;
+
+    background:
+        linear-gradient(rgba(0,150,200,0.55), rgba(0,100,150,0.55)),
+        url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1600&q=80");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-/* Glass Card */
+/* ===== Floating Medical Icons ===== */
+.medical-icons {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.medical-icons span {
+    position: absolute;
+    font-size: 42px;
+    opacity: 0.15;
+    animation: floatIcons linear infinite;
+}
+
+.medical-icons span:nth-child(1) { left: 10%; animation-duration: 18s; }
+.medical-icons span:nth-child(2) { left: 25%; animation-duration: 22s; }
+.medical-icons span:nth-child(3) { left: 40%; animation-duration: 20s; }
+.medical-icons span:nth-child(4) { left: 60%; animation-duration: 25s; }
+.medical-icons span:nth-child(5) { left: 75%; animation-duration: 19s; }
+.medical-icons span:nth-child(6) { left: 85%; animation-duration: 23s; }
+.medical-icons span:nth-child(7) { left: 50%; animation-duration: 21s; }
+
+@keyframes floatIcons {
+    0% { transform: translateY(100vh) rotate(0deg); }
+    100% { transform: translateY(-10vh) rotate(360deg); }
+}
+
+/* ===== GLASS CARD (MATCHING LOGIN) ===== */
 .glass-card {
     width: 420px;
     padding: 45px;
     border-radius: 25px;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255,255,255,0.15);
-    box-shadow: 0 0 40px rgba(0,255,255,0.2);
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    animation: floatCard 4s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
 }
 
-/* Title */
+@keyframes floatCard {
+    0% {transform: translateY(0px);}
+    50% {transform: translateY(-6px);}
+    100% {transform: translateY(0px);}
+}
+
+/* ===== AI ICON ===== */
+.ai-circle {
+    width: 75px;
+    height: 75px;
+    margin: auto;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00eaff, #00ffcc);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 34px;
+    color: black;
+    box-shadow: 0 0 35px rgba(0,255,255,0.9);
+}
+
+/* ===== TITLE ===== */
 .portal-title {
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 1px;
+    margin-top: 15px;
 }
 
-/* Input Fields */
+/* ===== INPUTS ===== */
 .form-control {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.5);
     border-radius: 12px;
     color: white;
+    padding: 12px;
+}
+
+.form-control::placeholder {
+    color: rgba(255,255,255,0.8);
 }
 
 .form-control:focus {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.35);
     border-color: #00ffff;
-    box-shadow: 0 0 12px rgba(0,255,255,0.6);
+    box-shadow: 0 0 12px rgba(0,255,255,0.8);
     color: white;
 }
 
-/* Button */
+/* ===== BUTTON ===== */
 .btn-modern {
-    background: linear-gradient(135deg, #00ffff, #00ff99);
+    background: linear-gradient(135deg, #00eaff, #00ffcc);
     border: none;
     border-radius: 30px;
     padding: 12px;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     transition: 0.3s ease;
     color: black;
 }
 
 .btn-modern:hover {
     transform: translateY(-3px);
-    box-shadow: 0 0 25px rgba(0,255,255,0.8);
+    box-shadow: 0 0 25px rgba(0,255,255,1);
 }
 
-/* Login Link */
+/* ===== LOGIN LINK ===== */
 .login-link {
-    color: #00ffff;
+    color: white;
+    font-weight: 600;
     text-decoration: none;
-    font-weight: 500;
 }
 
 .login-link:hover {
     text-decoration: underline;
 }
 
-.ai-icon {
-    font-size: 35px;
+hr {
+    border-color: rgba(255,255,255,0.4);
 }
 
 </style>
@@ -89,10 +157,20 @@ body {
 
 <body>
 
+<div class="medical-icons">
+    <span>💊</span>
+    <span>🩺</span>
+    <span>🧬</span>
+    <span>❤️</span>
+    <span>🏥</span>
+    <span>🧪</span>
+    <span>💉</span>
+</div>
+
 <div class="glass-card">
 
     <div class="text-center mb-4">
-        <div class="ai-icon">🧬</div>
+        <div class="ai-circle">🧬</div>
         <h3 class="portal-title">AI Clinical Registration</h3>
         <p class="text-light opacity-75">
             Create secure access to Diabetes Intelligence System
@@ -101,12 +179,12 @@ body {
 
     <form method="POST">
         <div class="mb-3">
-            <label class="form-label text-info">Username</label>
+            <label class="form-label">Username</label>
             <input type="text" name="username" class="form-control" placeholder="Choose username" required>
         </div>
 
         <div class="mb-4">
-            <label class="form-label text-info">Password</label>
+            <label class="form-label">Password</label>
             <input type="password" name="password" class="form-control" placeholder="Create password" required>
         </div>
 
@@ -117,10 +195,10 @@ body {
         </div>
     </form>
 
-    <hr class="text-light">
+    <hr class="my-4">
 
     <div class="text-center">
-        <small class="text-light opacity-75">Already registered?</small><br>
+        <small class="opacity-75">Already registered?</small><br>
         <a href="/login" class="login-link">
             Access Login Portal
         </a>
