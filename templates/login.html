@@ -1,215 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AI Clinical Login Portal</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
 
-/* ===== BRIGHT PROFESSIONAL BACKGROUND ===== */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    overflow: hidden;
+/* ===== BACKGROUND ===== */
+
+body{
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI', sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    overflow-x:hidden;
 
     background:
-        linear-gradient(rgba(0,150,200,0.55), rgba(0,100,150,0.55)),
-        url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1600&q=80");
+    linear-gradient(rgba(0,150,200,0.55), rgba(0,100,150,0.55)),
+    url("https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1600&q=80");
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-size:cover;
+    background-position:center;
 }
 
-/* ===== Floating Medical Icons (More Visible) ===== */
-.medical-icons {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
+/* ===== FLOATING ICONS ===== */
+
+.medical-icons{
+    position:absolute;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    z-index:0;
 }
 
-.medical-icons span {
-    position: absolute;
-    font-size: 42px;
-    opacity: 0.15;
-    animation: floatIcons linear infinite;
+.medical-icons span{
+    position:absolute;
+    font-size:42px;
+    opacity:0.15;
+    animation:floatIcons linear infinite;
 }
 
-.medical-icons span:nth-child(1) { left: 10%; animation-duration: 18s; }
-.medical-icons span:nth-child(2) { left: 25%; animation-duration: 22s; }
-.medical-icons span:nth-child(3) { left: 40%; animation-duration: 20s; }
-.medical-icons span:nth-child(4) { left: 60%; animation-duration: 25s; }
-.medical-icons span:nth-child(5) { left: 75%; animation-duration: 19s; }
-.medical-icons span:nth-child(6) { left: 85%; animation-duration: 23s; }
-.medical-icons span:nth-child(7) { left: 50%; animation-duration: 21s; }
+.medical-icons span:nth-child(1){left:10%; animation-duration:18s;}
+.medical-icons span:nth-child(2){left:25%; animation-duration:22s;}
+.medical-icons span:nth-child(3){left:40%; animation-duration:20s;}
+.medical-icons span:nth-child(4){left:60%; animation-duration:25s;}
+.medical-icons span:nth-child(5){left:75%; animation-duration:19s;}
+.medical-icons span:nth-child(6){left:85%; animation-duration:23s;}
+.medical-icons span:nth-child(7){left:50%; animation-duration:21s;}
 
-@keyframes floatIcons {
-    0% { transform: translateY(100vh) rotate(0deg); }
-    100% { transform: translateY(-10vh) rotate(360deg); }
+@keyframes floatIcons{
+0%{transform:translateY(100vh) rotate(0deg);}
+100%{transform:translateY(-10vh) rotate(360deg);}
 }
 
-/* ===== LIGHTER GLASS CARD ===== */
-.glass-card {
-    width: 420px;
-    padding: 45px;
-    border-radius: 25px;
-    background: rgba(255,255,255,0.18);
-    backdrop-filter: blur(18px);
-    border: 1px solid rgba(255,255,255,0.4);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-    animation: floatCard 4s ease-in-out infinite;
-    position: relative;
-    z-index: 2;
+/* ===== GLASS CARD ===== */
+
+.glass-card{
+    width:100%;
+    max-width:420px;
+    padding:45px;
+
+    border-radius:25px;
+    background:rgba(255,255,255,0.18);
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,0.4);
+    box-shadow:0 10px 40px rgba(0,0,0,0.25);
+
+    animation:floatCard 4s ease-in-out infinite;
+
+    position:relative;
+    z-index:2;
 }
 
-@keyframes floatCard {
-    0% {transform: translateY(0px);}
-    50% {transform: translateY(-6px);}
-    100% {transform: translateY(0px);}
+/* ===== CARD FLOAT ===== */
+
+@keyframes floatCard{
+0%{transform:translateY(0px);}
+50%{transform:translateY(-6px);}
+100%{transform:translateY(0px);}
 }
 
-/* ===== AI Icon Circle (More Glow) ===== */
-.ai-circle {
-    width: 75px;
-    height: 75px;
-    margin: auto;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #00eaff, #00ffcc);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 34px;
-    color: black;
-    box-shadow: 0 0 35px rgba(0,255,255,0.9);
+/* ===== AI ICON ===== */
+
+.ai-circle{
+    width:75px;
+    height:75px;
+    margin:auto;
+
+    border-radius:50%;
+
+    background:linear-gradient(135deg,#00eaff,#00ffcc);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:34px;
+    color:black;
+
+    box-shadow:0 0 35px rgba(0,255,255,0.9);
 }
 
-/* ===== Title ===== */
-.portal-title {
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-top: 15px;
+/* ===== TITLE ===== */
+
+.portal-title{
+    font-weight:700;
+    letter-spacing:1px;
+    margin-top:15px;
 }
 
-/* ===== Inputs ===== */
-.form-control {
-    background: rgba(255,255,255,0.25);
-    border: 1px solid rgba(255,255,255,0.5);
-    border-radius: 12px;
-    color: white;
-    padding: 12px;
+/* ===== INPUTS ===== */
+
+.form-control{
+    background:rgba(255,255,255,0.25);
+    border:1px solid rgba(255,255,255,0.5);
+    border-radius:12px;
+    color:white;
+    padding:12px;
 }
 
-.form-control::placeholder {
-    color: rgba(255,255,255,0.8);
+.form-control::placeholder{
+    color:rgba(255,255,255,0.8);
 }
 
-.form-control:focus {
-    background: rgba(255,255,255,0.35);
-    border-color: #00ffff;
-    box-shadow: 0 0 12px rgba(0,255,255,0.8);
-    color: white;
+.form-control:focus{
+    background:rgba(255,255,255,0.35);
+    border-color:#00ffff;
+    box-shadow:0 0 12px rgba(0,255,255,0.8);
+    color:white;
 }
 
-/* ===== Login Button ===== */
-.btn-login {
-    background: linear-gradient(135deg, #00eaff, #00ffcc);
-    border: none;
-    border-radius: 30px;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: 700;
-    transition: 0.3s ease;
-    color: black;
+/* ===== LOGIN BUTTON ===== */
+
+.btn-login{
+    background:linear-gradient(135deg,#00eaff,#00ffcc);
+    border:none;
+    border-radius:30px;
+    padding:12px;
+
+    font-size:16px;
+    font-weight:700;
+
+    transition:0.3s ease;
+    color:black;
 }
 
-.btn-login:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 25px rgba(0,255,255,1);
+.btn-login:hover{
+    transform:translateY(-3px);
+    box-shadow:0 0 25px rgba(0,255,255,1);
 }
 
-/* ===== Register Button ===== */
-.btn-register {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid white;
-    border-radius: 30px;
-    padding: 10px;
-    color: white;
-    transition: 0.3s ease;
+/* ===== REGISTER BUTTON ===== */
+
+.btn-register{
+    background:rgba(255,255,255,0.2);
+    border:1px solid white;
+    border-radius:30px;
+    padding:10px;
+    color:white;
+    transition:0.3s ease;
 }
 
-.btn-register:hover {
-    background: white;
-    color: #007a99;
-    box-shadow: 0 0 20px rgba(255,255,255,0.8);
+.btn-register:hover{
+    background:white;
+    color:#007a99;
+    box-shadow:0 0 20px rgba(255,255,255,0.8);
 }
 
-hr {
-    border-color: rgba(255,255,255,0.4);
+hr{
+    border-color:rgba(255,255,255,0.4);
+}
+
+/* ================= MOBILE RESPONSIVE ================= */
+
+@media (max-width:768px){
+
+.glass-card{
+padding:25px;
+border-radius:20px;
+}
+
+.portal-title{
+font-size:22px;
+}
+
+.ai-circle{
+width:60px;
+height:60px;
+font-size:28px;
+}
+
+.medical-icons span{
+font-size:28px;
+}
+
 }
 
 </style>
+
 </head>
 
 <body>
 
+<!-- Floating Icons -->
+
 <div class="medical-icons">
-    <span>💊</span>
-    <span>🩺</span>
-    <span>🧬</span>
-    <span>❤️</span>
-    <span>🏥</span>
-    <span>🧪</span>
-    <span>💉</span>
+<span>💊</span>
+<span>🩺</span>
+<span>🧬</span>
+<span>❤️</span>
+<span>🏥</span>
+<span>🧪</span>
+<span>💉</span>
 </div>
+
+<!-- LOGIN CARD -->
 
 <div class="glass-card">
 
-    <div class="text-center mb-4">
-        <div class="ai-circle">🤖</div>
-        <h3 class="portal-title">AI Clinical Access Portal</h3>
-        <p class="text-light opacity-75">
-            Secure login to Diabetes Intelligence System
-        </p>
-    </div>
+<div class="text-center mb-4">
 
-    <form method="POST">
-        <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input type="text" name="username" class="form-control" placeholder="Enter username" required>
-        </div>
+<div class="ai-circle">🤖</div>
 
-        <div class="mb-4">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" placeholder="Enter password" required>
-        </div>
+<h3 class="portal-title">
+AI Clinical Access Portal
+</h3>
 
-        <div class="d-grid">
-            <button type="submit" class="btn btn-login">
-                🔐 Secure Login
-            </button>
-        </div>
-    </form>
+<p class="text-light opacity-75">
+Secure login to Diabetes Intelligence System
+</p>
 
-    <hr class="my-4">
+</div>
 
-    <div class="text-center">
-        <small class="opacity-75">New to the system?</small>
-        <div class="d-grid mt-3">
-            <a href="/register" class="btn btn-register">
-                📝 Create Clinical Account
-            </a>
-        </div>
-    </div>
+<form method="POST">
+
+<div class="mb-3">
+<label class="form-label">Username</label>
+
+<input type="text"
+name="username"
+class="form-control"
+placeholder="Enter username"
+required>
+</div>
+
+<div class="mb-4">
+<label class="form-label">Password</label>
+
+<input type="password"
+name="password"
+class="form-control"
+placeholder="Enter password"
+required>
+</div>
+
+<div class="d-grid">
+<button type="submit" class="btn btn-login">
+🔐 Secure Login
+</button>
+</div>
+
+</form>
+
+<hr class="my-4">
+
+<div class="text-center">
+
+<small class="opacity-75">
+New to the system?
+</small>
+
+<div class="d-grid mt-3">
+
+<a href="/register" class="btn btn-register">
+📝 Create Clinical Account
+</a>
+
+</div>
+
+</div>
 
 </div>
 
